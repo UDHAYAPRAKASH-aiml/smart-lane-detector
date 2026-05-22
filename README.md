@@ -1,38 +1,38 @@
-#  Lane Detection
+# Lane Detection using OpenCV
 
-##  Aim
-
-To implement a basic lane detection pipeline using OpenCV by completing missing code segments at specified locations.
+A basic computer vision project that detects road lane lines using OpenCV image processing techniques such as grayscale conversion, thresholding, region masking, edge detection, Gaussian blur, and Hough Transform.
 
 ---
 
-## Learning Objective
+## Aim
 
-* Understand each stage of image processing
-* Learn how to build a complete computer vision pipeline
-* Practice writing code in guided sections
-
-**Important Instruction:**
-👉 Write code **ONLY in places marked as `# Your Code Here`**
-👉 Do NOT modify any other part of the code
+To implement a basic lane detection pipeline using OpenCV by completing the missing code segments in the provided framework.
 
 ---
 
-##  Software Used
+## Learning Objectives
 
-* Anaconda – Python 3.7
-* Jupyter Notebook / VS Code
-* OpenCV (cv2)
-* NumPy
-* Matplotlib
-
----
-
-##  Algorithm & Explanation
+- Understand different stages of image processing
+- Learn how a lane detection pipeline works
+- Implement computer vision techniques using Python
+- Practice OpenCV functions step-by-step
 
 ---
 
-###  Step 1: Import Libraries
+## Software and Libraries Used
+
+- Python 3.7
+- Anaconda
+- Jupyter Notebook / VS Code
+- OpenCV (`cv2`)
+- NumPy
+- Matplotlib
+
+---
+
+## Algorithm
+
+### Step 1: Import Libraries
 
 ```python
 import cv2
@@ -42,138 +42,193 @@ import matplotlib.pyplot as plt
 
 ---
 
-###  Step 2: Read the Image
+### Step 2: Read the Image
 
 ```python
-# Read the image using OpenCV
-
-###
-# Your Code Here
-###
+image = cv2.imread('lan_img1.jpg')
 ```
 
 ---
 
-###  Step 3: Convert to Grayscale
+### Step 3: Convert to Grayscale
 
 ```python
-# Convert to grayscale.
-
-###
-# Your Code Here
-###
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 ```
 
 ---
 
-###  Step 4: Display Images
+### Step 4: Display Images
 
 ```python
 plt.figure(figsize=(10,5))
 
-###
-# Your Code Here
-###
+plt.subplot(1,2,1)
+plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+plt.title('Input Image')
+
+plt.subplot(1,2,2)
+plt.imshow(gray, cmap='gray')
+plt.title('Grayscale')
+
+plt.show()
 ```
 
 ---
 
-###  Step 5: Thresholding
+### Step 5: Thresholding
 
 ```python
-# Apply thresholding
-
-threshold = 
-###
-# Your Code Here
-###
+threshold = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY)[1]
 ```
 
 ---
 
-###  Step 6: Region of Interest (ROI)
+### Step 6: Region of Interest (ROI)
 
 ```python
-# ROI masking already provided
-# (Do not modify)
+roi_vertices = np.array([[[100, 540],
+                          [900, 540],
+                          [515, 320],
+                          [450, 320]]])
+
+mask = np.zeros_like(threshold)
+
+if len(threshold.shape) > 2:
+    channel_count = threshold.shape[2]
+    ignore_mask_color = (255,) * channel_count
+else:
+    ignore_mask_color = 255
+
+cv2.fillPoly(mask, roi_vertices, ignore_mask_color)
+
+roi = cv2.bitwise_and(threshold, mask)
+
+plt.figure(figsize=(20,10))
+
+plt.subplot(1,3,1)
+plt.imshow(threshold, cmap='gray')
+plt.title('Initial Threshold')
+
+plt.subplot(1,3,2)
+plt.imshow(mask, cmap='gray')
+plt.title('Polyfill Mask')
+
+plt.subplot(1,3,3)
+plt.imshow(roi, cmap='gray')
+plt.title('Isolated ROI')
+
+plt.show()
 ```
 
 ---
 
-### Step 7: Edge Detection (Canny)
+### Step 7: Edge Detection
 
 ```python
-# Perform Edge Detection
-
-###
-# Your Code Here
-###
+edges = cv2.Canny(roi, 50, 150)
 ```
 
 ---
 
-###  Step 8: Gaussian Blur
+### Step 8: Gaussian Blur
 
 ```python
-# Apply Gaussian Blur
-
-###
-# Your Code Here
-###
+canny_blur = cv2.GaussianBlur(edges, (5,5), 0)
 ```
 
 ---
 
-###  Step 9: Hough Transform
+### Step 9: Hough Transform
 
 ```python
-# Detect lines using Hough Transform
-
-###
-# Your Code Here
-###
+lines = cv2.HoughLinesP(
+    canny_blur,
+    rho=2,
+    theta=np.pi/180,
+    threshold=50,
+    minLineLength=40,
+    maxLineGap=100
+)
 ```
 
 ---
 
-### Step 10: Lane Detection Logic
+### Step 10: Draw Detected Lines
 
 ```python
-# Already implemented
-# (Do not modify)
+def draw_lines(img, lines, color=[255, 0, 0], thickness=2):
+
+    if lines is not None:
+        for line in lines:
+            for x1, y1, x2, y2 in line:
+                cv2.line(img, (x1, y1), (x2, y2), color, thickness)
+
+hough = np.zeros((image.shape[0], image.shape[1], 3), dtype=np.uint8)
+
+draw_lines(hough, lines)
+
+plt.figure(figsize=(15,10))
+plt.imshow(hough)
+plt.title('Detected Lane Lines')
+
+plt.show()
 ```
 
 ---
 
-##  Expected Output
+## Expected Output
 
-* Original image
-* Grayscale image
-* Thresholded image
-* ROI masked image
-* Edge detected image
-* Smoothed image
-* Detected lines
-* Final lane detection output
+- Original Image
+- Grayscale Image
+- Thresholded Image
+- ROI Masked Image
+- Edge Detection Output
+- Blurred Image
+- Hough Line Detection
+- Final Lane Detection Result
 
 ---
 
-##  Instructions
+## How to Run
 
-* Fill ONLY in `# Your Code Here` sections
-* Do NOT change existing code
-* Run step-by-step
-* Verify outputs
+1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/your-repository-name.git
+```
+
+2. Install required libraries
+
+```bash
+pip install opencv-python numpy matplotlib
+```
+
+3. Open the notebook in Jupyter Notebook or VS Code
+
+4. Run the notebook step-by-step
 
 ---
 
 ## Result
 
-Thus, the lane detection pipeline is successfully implemented by completing the missing code sections. The system detects and highlights lane lines effectively.
+The lane detection pipeline was successfully implemented using OpenCV techniques. The system effectively detects and highlights lane boundaries from the road image.
 
 ---
 
-##  Developed By
+## Concepts Used
 
-* **Name:** ____________________________
-* **Register No:** ______________________
+- Image Processing
+- Computer Vision
+- Edge Detection
+- Hough Transform
+- ROI Masking
+- OpenCV
+
+---
+
+## Developed By
+```
+Name: udhaya prakash v
+Register Number: 212224240177
+```
