@@ -49,9 +49,8 @@ Display all edge-detected images for comparison.
 
 ## Developed By
 
-- **Name:** ____________________________  
-- **Register No:** ______________________  
-
+- **Name:**udhaya prakash v 
+- **Register No:**212224240177
 ---
 
 ## Output
